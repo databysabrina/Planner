@@ -1,5 +1,7 @@
 # Meu Planner — como publicar e instalar no Android
 
+> **Já publicou a versão anterior?** Pule para "Atualizações", no fim deste arquivo.
+
 Tempo total: uns 10 minutos. Faça os passos 1 a 3 no computador e o passo 4 no celular.
 
 ## 1. Criar o repositório no GitHub
@@ -37,3 +39,9 @@ Tempo total: uns 10 minutos. Faça os passos 1 a 3 no computador e o passo 4 no 
 
 ## Atualizações (próximas fases)
 Quando eu te mandar uma versão nova, repita o **passo 2** (enviar os arquivos novos por cima dos antigos e clicar em *Commit changes*). Seus dados não são apagados. O app se atualiza sozinho na próxima vez que você abrir com internet. Às vezes é preciso fechar e abrir de novo.
+
+### Como atualizar, passo a passo
+1. No GitHub, abra o repositório `planner` → **Add file** → **Upload files**.
+2. Arraste **todo o conteúdo** da pasta nova (arquivos e as pastas `css`, `js`, `icons`). Os arquivos com o mesmo nome são substituídos.
+3. Clique em **Commit changes** e espere 1 ou 2 minutos.
+4. No celular, abra o app com internet, feche e abra de novo. Em **Hoje → engrenagem**, o rodapé mostra a versão (agora **1.1**).

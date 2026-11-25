@@ -1,5 +1,5 @@
 // Service worker: deixa o app abrir sem internet e buscar atualizações quando há conexão.
-const VERSION = 'planner-v1.0.0';
+const VERSION = 'planner-v1.1.0';
 const SHELL = [
   './',
   './index.html',
@@ -9,6 +9,9 @@ const SHELL = [
   './js/db.js',
   './js/ui.js',
   './js/views.js',
+  './js/core.js',
+  './js/agenda.js',
+  './js/estudos.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png'
