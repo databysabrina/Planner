@@ -44,4 +44,4 @@ Quando eu te mandar uma versão nova, repita o **passo 2** (enviar os arquivos n
 1. No GitHub, abra o repositório `planner` → **Add file** → **Upload files**.
 2. Arraste **todo o conteúdo** da pasta nova (arquivos e as pastas `css`, `js`, `icons`). Os arquivos com o mesmo nome são substituídos.
 3. Clique em **Commit changes** e espere 1 ou 2 minutos.
-4. No celular, abra o app com internet, feche e abra de novo. Em **Hoje → engrenagem**, o rodapé mostra a versão (agora **1.1**).
+4. No celular, abra o app com internet, feche e abra de novo. Em **Hoje → engrenagem**, o rodapé mostra a versão (agora **1.2**).
