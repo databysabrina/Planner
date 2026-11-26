@@ -83,8 +83,8 @@ export function viewHoje(S) {
 
   return `
   ${head(`C:\\HOJE\\${weekday}`, 'Meu dia', text, right)}${seg}
-
-  <section class="win">${winBar('PRIORIDADES', 'var(--pink)')}
+  <div class="hoje-grid">
+  <section class="win a-pri">${winBar('PRIORIDADES', 'var(--pink)')}
     <div class="win-body tight">
       ${tops.length ? tops.map((t) => `<div class="item-row">
           <button class="check" type="button" data-act="finish-task" data-id="${t.id}" aria-label="Finalizar: ${esc(t.title)}" style="flex:0 0 auto;width:auto;padding-right:4px"><span class="box"></span></button>
@@ -94,16 +94,16 @@ export function viewHoje(S) {
     </div>
   </section>
 
-  <section class="list"><h2 class="h2">Linha do tempo</h2>
+  <section class="list a-time"><h2 class="h2">Linha do tempo</h2>
     ${todayOcc.length ? todayOcc.map((o) => occRow(o)).join('') : '<div class="empty">Nada na agenda hoje. Toque em + para adicionar um evento.</div>'}
   </section>
 
-  ${prazos.length ? `<section class="win">${winBar('PRAZOS_PROXIMOS', 'var(--orange)')}
+  ${prazos.length ? `<section class="win a-prazos">${winBar('PRAZOS_PROXIMOS', 'var(--orange)')}
     <div class="win-body">${prazos.map(taskCard).join('')}</div>
   </section>` : ''}
 
-  ${pinned.length ? `<section class="list"><h2 class="h2">Fixadas</h2>${pinned.map((n) => `<button class="postit ${NOTE_TYPES[n.type].hand ? 'hand' : ''}" type="button" data-act="open-note" data-id="${n.id}" style="border:0;text-align:left;${n.type !== 'lembrete' ? `background:${NOTE_TYPES[n.type].bg};color:${NOTE_TYPES[n.type].fg};${n.type === 'anotacao' ? 'border:1.5px solid var(--line);' : ''}` : ''}"><div class="note-head" style="font-family:var(--mono)">${NOTE_TYPES[n.type].short}</div><div class="note-text">${esc(n.text)}</div></button>`).join('')}</section>` : ''}
-  `;
+  ${pinned.length ? `<section class="list a-fix"><h2 class="h2">Fixadas</h2>${pinned.map((n) => `<button class="postit ${NOTE_TYPES[n.type].hand ? 'hand' : ''}" type="button" data-act="open-note" data-id="${n.id}" style="border:0;text-align:left;${n.type !== 'lembrete' ? `background:${NOTE_TYPES[n.type].bg};color:${NOTE_TYPES[n.type].fg};${n.type === 'anotacao' ? 'border:1.5px solid var(--line);' : ''}` : ''}"><div class="note-head" style="font-family:var(--mono)">${NOTE_TYPES[n.type].short}</div><div class="note-text">${esc(n.text)}</div></button>`).join('')}</section>` : ''}
+  </div>`;
 }
 
 // ---------------- TAREFAS (lista) ----------------
@@ -119,7 +119,7 @@ export function viewTarefas(S) {
       .sort((a, b) => b.finishedAt - a.finishedAt);
     return `${head('C:\\TAREFAS\\HISTORICO\\', 'Histórico')}${seg}
       <label class="field"><span class="sr-only">Buscar no histórico</span><input class="input" type="search" id="hist-q" placeholder="Buscar por título, pasta, pessoa…" value="${esc(S.ui.histQ || '')}"></label>
-      <div class="list">${list.length ? list.map((t) => `
+      <div class="list cards">${list.length ? list.map((t) => `
         <article class="win">
           <div class="win-bar" style="--c:var(--muted);font-size:16px"><span>${CAT[t.cat].label.toUpperCase()}</span><span>finalizada ${esc(shortDate(t.finishedAt))}</span></div>
           <div class="win-body">
@@ -134,8 +134,8 @@ export function viewTarefas(S) {
   const afazer = open.filter((t) => t.status === 'afazer');
   return `${head('C:\\TAREFAS\\', 'Afazeres', '', `<button class="btn sm" type="button" style="--c:var(--orange)" data-act="new-task">+ Tarefa</button>`)}${seg}
     ${open.length ? '' : `<div class="empty">Nenhuma tarefa ${tab === 'pessoal' ? 'pessoal' : 'de trabalho'} aberta.<br>Toque em <b>+ Tarefa</b> para criar.</div>`}
-    ${andamento.length ? `<div class="group-title">em andamento (${andamento.length})</div><div class="list">${andamento.map(taskCard).join('')}</div>` : ''}
-    ${afazer.length ? `<div class="group-title">a fazer (${afazer.length})</div><div class="list">${afazer.map(taskCard).join('')}</div>` : ''}`;
+    ${andamento.length ? `<div class="group-title">em andamento (${andamento.length})</div><div class="list cards">${andamento.map(taskCard).join('')}</div>` : ''}
+    ${afazer.length ? `<div class="group-title">a fazer (${afazer.length})</div><div class="list cards">${afazer.map(taskCard).join('')}</div>` : ''}`;
 }
 
 // ---------------- TAREFA (detalhe) ----------------
@@ -252,5 +252,5 @@ export function viewConfig(S, info, cloudHtml = '') {
       <dt>Projetos</dt><dd>${S.projects.length}</dd>
     </dl></div>
   </section>
-  <p class="sub" style="text-align:center;font-size:12px">Planner · versão 1.2 (Fases 1 a 4)</p>`;
+  <p class="sub" style="text-align:center;font-size:12px">Planner · versão 1.3</p>`;
 }

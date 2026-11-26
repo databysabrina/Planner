@@ -327,10 +327,30 @@ export async function testPush() {
   await syncNow();
   const { data, error } = await client.functions.invoke('lembretes', { body: { test: true } });
   if (error) {
-    let msg = '';
-    try { msg = (await error.context.json()).error; } catch (e) { msg = ''; }
-    if (!msg && /Failed to send|fetch/i.test(String(error.message))) msg = 'Não encontrei a função "lembretes" no Supabase. Confira a Parte 2 do passo a passo.';
-    throw new Error(msg || friendly(error));
+    let status = 0, detail = '';
+    try {
+      status = error.context.status;
+      const txt = await error.context.text();
+      try { const j = JSON.parse(txt); detail = j.error || j.msg || j.message || txt; } catch (e) { detail = txt; }
+    } catch (e) { detail = String(error.message || ''); }
+    let hint = '';
+    if (status === 401) hint = 'A verificação de JWT da função ainda está ligada ou o login expirou. Confira a Parte 2, passo 5, e tente "Sair da conta" e entrar de novo.';
+    else if (status === 404) hint = 'Não encontrei a função "lembretes". Confira se o nome está exatamente assim (Parte 2).';
+    else if (status === 500 || status === 546) hint = 'A função deu erro. Confira os 3 segredos (Parte 3) e veja Edge Functions → lembretes → Logs.';
+    else if (!status) hint = 'Não consegui falar com a função. Confira a internet e a Parte 2.';
+    const err = new Error(`${status ? 'Erro ' + status + ': ' : ''}${detail || 'sem detalhes'}${hint ? ' — ' + hint : ''}`);
+    throw err;
   }
-  return data;
+  return data || {};
+}
+
+export async function testLocalNotification() {
+  if (!pushSupported()) throw new Error('Este navegador não aceita notificações.');
+  if (Notification.permission !== 'granted') throw new Error('As notificações não estão permitidas neste aparelho.');
+  const reg = await navigator.serviceWorker.ready;
+  await reg.showNotification('Teste local do Planner', {
+    body: 'Se você está vendo isto, o aparelho está pronto para receber notificações.',
+    icon: './icons/icon-192.png', badge: './icons/badge-96.png', vibrate: [150, 100, 150], tag: 'teste-local', renotify: true,
+    data: { url: './#/config' }
+  });
 }

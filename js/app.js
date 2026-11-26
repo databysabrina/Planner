@@ -71,6 +71,7 @@ async function render() {
   }
 
   view.innerHTML = html;
+  view.dataset.route = r.name;
   lastKey = r.key;
   view.scrollTop = same ? scroll : 0;
   document.querySelectorAll('#tabbar a').forEach((a) => {

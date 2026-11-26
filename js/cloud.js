@@ -1,7 +1,9 @@
 // Telas de "Conta e nuvem" e "Notificações", dentro de Ajustes.
 import { esc, winBar, toast, confirmBox } from './ui.js';
 import { rerender } from './core.js';
-import { getStatus, isConfigured, isLoggedIn, signIn, signUp, signOut, syncNow, pushState, enablePush, disablePush, testPush } from './sync.js';
+import { getStatus, isConfigured, isLoggedIn, signIn, signUp, signOut, syncNow, pushState, enablePush, disablePush, testPush, testLocalNotification } from './sync.js';
+
+let testMsg = { text: '', ok: true };
 import { getNotifPrefs, setNotifPrefs, OFFSET_CHOICES, VIBE_CHOICES } from './notif.js';
 
 const hm = (ts) => { const d = new Date(ts); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
@@ -50,7 +52,8 @@ export async function viewCloud() {
       ${!ps.supported ? '<p class="sub" style="margin:0;color:var(--orange)">Este navegador não aceita notificações. Abra pelo ícone do app instalado (Chrome no Android).</p>' : `
       <p style="margin:0;font-weight:800">${on ? '<span style="color:var(--blue)">Ativadas neste celular</span>' : ps.permission === 'denied' ? '<span style="color:var(--pink)">Bloqueadas no Android</span>' : 'Desativadas neste celular'}</p>
       ${ps.permission === 'denied' ? '<p class="sub" style="margin:0;line-height:1.45">Para liberar: Configurações do Android → Apps → Planner (ou Chrome) → Notificações → Permitir.</p>' : ''}
-      <div class="grid2">${on ? '<button class="btn ghost sm" type="button" data-act="push-off">Desativar</button><button class="btn sm" type="button" style="--c:var(--pink)" data-act="push-test">Enviar teste</button>' : '<button class="btn sm" type="button" style="--c:var(--pink);grid-column:1/-1" data-act="push-on">Ativar notificações</button>'}</div>`}
+      <div class="grid2">${on ? '<button class="btn sm" type="button" style="--c:var(--pink)" data-act="push-test">Enviar teste</button><button class="btn ghost sm" type="button" data-act="push-local">Testar só neste aparelho</button><button class="btn ghost sm" type="button" data-act="push-off" style="grid-column:1/-1">Desativar notificações</button>' : `<button class="btn sm" type="button" style="--c:var(--pink);grid-column:1/-1" data-act="push-on">${ps.permission === 'granted' ? 'Reativar notificações' : 'Ativar notificações'}</button>`}</div>
+      ${testMsg.text ? `<p class="test-msg ${testMsg.ok ? 'ok' : 'bad'}" role="status">${esc(testMsg.text)}</p>` : ''}`}
     </div>
   </section>
 
@@ -114,14 +117,27 @@ export const cloudActions = {
     rerender();
   },
   'push-on': async () => {
-    try { await enablePush(); toast('Notificações ativadas!'); } catch (e) { toast(e.message); }
+    try { await enablePush(); testMsg = { text: 'Notificações ativadas. Agora toque em "Enviar teste".', ok: true }; } catch (e) { testMsg = { text: e.message, ok: false }; }
     rerender();
   },
   'push-off': async () => { try { await disablePush(); toast('Notificações desativadas neste celular'); } catch (e) { toast('Não consegui desativar'); } rerender(); },
   'push-test': async (el) => {
     el.disabled = true;
-    try { const r = await testPush(); toast(r && r.sent ? 'Teste enviado! Deve chegar em segundos.' : 'Enviado.'); } catch (e) { toast(e.message); }
-    el.disabled = false;
+    testMsg = { text: 'Enviando pelo Supabase…', ok: true }; rerender();
+    try {
+      const r = await testPush();
+      testMsg = r.sent
+        ? { text: `O Supabase enviou para ${r.sent} aparelho(s) às ${hm(Date.now())}. Deve chegar em até 1 minuto. Se não aparecer nada, toque em "Testar só neste aparelho".`, ok: true }
+        : { text: 'O Supabase recebeu o pedido, mas o envio para o aparelho falhou. Abra no Supabase: Edge Functions → lembretes → Logs, e me mande um print.', ok: false };
+    } catch (e) { testMsg = { text: e.message, ok: false }; }
+    rerender();
+  },
+  'push-local': async () => {
+    try {
+      await testLocalNotification();
+      testMsg = { text: 'Mostrei uma notificação gerada pelo próprio aparelho. Se ela apareceu, o aparelho está ok, e o problema está no envio pelo Supabase. Se NÃO apareceu, o Android está bloqueando: veja Configurações → Apps → Planner/Chrome → Notificações.', ok: true };
+    } catch (e) { testMsg = { text: e.message, ok: false }; }
+    rerender();
   },
   'pref-offset': (el) => {
     const p = getNotifPrefs();

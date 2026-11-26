@@ -36,7 +36,7 @@ export function viewEstudos() {
   const list = [...S.projects].sort((a, b) => a.createdAt - b.createdAt);
   return `<div class="head"><div><div class="path">C:\\ESTUDOS\\</div><h1 class="h1">Projetos</h1></div>
     <button class="btn sm" type="button" style="--c:var(--lilac);--s:var(--yellow)" data-act="proj-new">+ Projeto</button></div>
-  ${list.length ? list.map((p) => {
+  ${list.length ? '<div class="cards">' + list.map((p) => {
     const mins = weeklyMinutes(p), next = nextSession(p), cd = countdown(p);
     return `<button type="button" class="folder" data-act="go" data-v="#/projeto/${p.id}" style="--c:${p.color}">
       <span class="folder-tab">${esc(folderName(p.name))}</span>
@@ -45,7 +45,7 @@ export function viewEstudos() {
         <span class="meta"><span>${(p.subjects || []).length} disciplina${(p.subjects || []).length === 1 ? '' : 's'}</span><span>${fmtHours(mins)} por semana</span>${cd ? `<span style="color:var(--yellow)">${esc(cd)}</span>` : ''}</span>
         ${next ? `<span style="font-size:13px;font-weight:800;color:${p.color}">próxima: ${esc(next)}</span>` : ''}
       </span></button>`;
-  }).join('') : `<div class="empty">Crie um projeto para cada objetivo, por exemplo <b>Concurso TAE do IF</b> ou <b>Escrita Criativa</b>.<br>Dentro dele você cadastra as disciplinas e os horários, e a grade semanal se monta sozinha.</div>`}`;
+  }).join('') + '</div>' : `<div class="empty">Crie um projeto para cada objetivo, por exemplo <b>Concurso TAE do IF</b> ou <b>Escrita Criativa</b>.<br>Dentro dele você cadastra as disciplinas e os horários, e a grade semanal se monta sozinha.</div>`}`;
 }
 
 export function viewProjeto(p) {
@@ -81,7 +81,7 @@ function visao(p) {
 }
 
 function disciplinas(p) {
-  return `<div class="list">${(p.subjects || []).map((s) => `
+  return `<div class="list cards">${(p.subjects || []).map((s) => `
     <button type="button" class="card" data-act="subj-edit" data-id="${s.id}" style="flex-direction:row;align-items:center;gap:12px">
       <span class="abbr lg" style="background:${s.color}">${esc(s.abbr)}</span>
       <span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-weight:800;overflow-wrap:anywhere">${esc(s.name)}</span>
@@ -116,7 +116,7 @@ function grade(p) {
 }
 
 function links(p) {
-  return `<div class="list">${(p.links || []).map((l) => {
+  return `<div class="list cards">${(p.links || []).map((l) => {
     const [lab, col] = LINK_TYPES[l.type] || LINK_TYPES.outro;
     return `<div class="card" style="flex-direction:row;align-items:center;gap:10px;padding:8px 8px 8px 12px">
       <span class="ltype" style="background:${col}">${lab}</span>
